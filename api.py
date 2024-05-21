@@ -8,6 +8,7 @@ import time
 from model import PredictionModel
 import os
 import re
+import random
 from collections import Counter
 
 app = Flask(__name__)
