@@ -1,0 +1,9 @@
+flask_cors
+flask
+scikit-learn
+pandas
+numpy
+pymongo
+requests
+pyjwt
+schedule

@@ -1,0 +1,52 @@
+version: "3.9"
+services:
+  healthray_AI:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthray_AI
+    image: "healthraydev/healthray_ai:0.0.1_DEV"
+    environment:
+      - MONGO_URL=mongodb://mongodbai:27017/healthray_prediction
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodbai
+    tty: true
+    networks:
+      default:
+        ipv4_address: 172.20.0.11
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    ports:
+      - '6000:5000'
+
+  mongodbai:
+    image: mongo:4.4
+    container_name: healthraymongoai
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongodb_data:/data/db
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
