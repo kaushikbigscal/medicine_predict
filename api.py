@@ -112,20 +112,27 @@ def medicinePrediction():
     doctor_ids = DOCTOR_ID if isinstance(DOCTOR_ID, list) else [DOCTOR_ID]
 
     # First Map Data if All Symptoms Properly Match 
-    diagnosis, advice, prescriptions, status, success, message = Map.map_data(doctor_ids, SYMPTOM_ID)
+    diagnosis_map, advice_map, prescriptions_map, status, success, message = Map.map_data(doctor_ids, SYMPTOM_ID)
 
     # If any of diagnosis, advice, or prescriptions is None, call prediction method
-    if not diagnosis or not advice or not prescriptions:
+    if not diagnosis_map or not advice_map or not prescriptions_map:
         med_probs, notes_probs, diag_probs, status, success, message = prediction(SYMPTOM_ID, doctor_ids)
     else:
         med_probs, notes_probs, diag_probs = None, None, None
 
+    medicine = list(set(prescriptions_map if prescriptions_map else med_probs))
+    advice = list(set(advice_map if advice_map else notes_probs))
+    diagnosis = list(set(diagnosis_map if diagnosis_map else diag_probs))
+
+    final_medicine = random.sample(medicine, 10) if len(medicine) > 10 else medicine
+    final_advice = random.sample(advice, 10) if len(advice) > 10 else advice
+    final_diagnosis = random.sample(diagnosis, 10) if len(diagnosis) > 10 else diagnosis
 
     # Construct the response data based on the conditions
     data = {
-        'Medicine': list(set(prescriptions if prescriptions else med_probs)),
-        'Advice': list(set(advice if advice else notes_probs)),
-        'Diagnosis': list(set(diagnosis if diagnosis else diag_probs))
+        'Medicine': final_medicine,
+        'Advice': final_advice,
+        'Diagnosis': final_diagnosis
     }
 
     # Return Response
